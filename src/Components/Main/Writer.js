@@ -5,7 +5,8 @@ import { Link, BrowserRouter as Router, Route } from 'react-router-dom';
 const Writer = (props) => {
     return (
         <tr>
-            작가이름:{props.writerName}
+            <td>{props.Num}</td>
+            <td>{props.userId}</td>
         </tr>
     );
 };

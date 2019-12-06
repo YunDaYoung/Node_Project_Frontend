@@ -7,59 +7,100 @@ import { Table, Button } from 'react-bootstrap';
 class MainContainer extends Component {
 
     state = {
-        topicData: [
-
-        ],
-        writerData: [],
-
+        topicData: [],
+        writingData: [],
     }
 
     componentDidMount() {
-
         this.getTopicData();
     }
 
     getTopicData = () => {
-        axios.post('http://localhost:3000/main')
-            .then((res) => {
-                console.log(res.data);
-                if (res.data.result === 1) {
-                    console.log('success');
-
+        fetch("http://localhost:3000/main", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+            }),
+        }).then(response => {
+                return response.json();
+        }).then(data => {
+            console.log(data);
+            console.log(data.data)
+            if(data.result == 1){
+                if(data.data.length >= 3){
                     this.setState({
-                        topicData: res.data.data
+                        topicData: [
+                            ...this.state.topicData,
+                            { topicCode: data.data[0].topicCode, topicName: data.data[0].topicName, userId : data.data[0].userId},
+                            { topicCode: data.data[1].topicCode, topicName: data.data[1].topicName, userId : data.data[1].userId },
+                            { topicCode: data.data[2].topicCode, topicName: data.data[2].topicName, userId : data.data[2].userId }
+                        ]
                     })
-                } else {
-                    console.log('fail')
-                    this.props.history.push('/');
+                }else if (data.data.length == 2){
+                    this.setState({
+                        topicData: [
+                            ...this.state.topicData,
+                            { topicCode: data.data[0].topicCode, topicName: data.data[0].topicName, userId : data.data[0].userId},
+                            { topicCode: data.data[1].topicCode, topicName: data.data[1].topicName, userId : data.data[1].userId }
+                        ]
+                    })
+                }else if (data.data.length == 1){
+                    this.setState({
+                        topicData: [
+                            ...this.state.topicData,
+                            { topicCode: data.data[0].topicCode, topicName: data.data[0].topicName, userId : data.data[0].userId},
+                        ]
+                    })
                 }
+            }
+            else{
+                console.log("false");
+            }
+        })
+
+        fetch("http://localhost:3000/topWriter")
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                if(data.result == false) {}
+                else if(data.length >= 3){
+                    this.setState({
+                        writingData: [
+                            ...this.state.writingData,
+                            { Num: 1, userId : data[0].userId},
+                            { Num: 2, userId : data[1].userId},
+                            { Num: 3, userId : data[2].userId}
+                        ]
+                    })
+                }else if (data.length == 2){
+                    this.setState({
+                        writingData: [
+                            ...this.state.writingData,
+                            { Num: 1, userId : data[0].userId},
+                            { Num: 2, userId : data[1].userId},
+                        ]
+                    })
+                }else if (data.length == 1){
+                    this.setState({
+                        writingData: [
+                            ...this.state.writingData,
+                            { Num: 1, userId : data[0].userId},
+                        ]
+                    })
+                }
+                console.log(data);
             })
     }
 
     render() {
-        const topicList = this.state.topicData.map(topic =>
-            (
-                <TopicList
-                    key={topic.topicCode}
-                    {...topic}
-
-                />
-            )
-        )
-        const WriterList = this.state.writerData.map(writer =>
-            (
-                <Writer
-                    key={writer.id}
-                    {...writer}
-
-                />
-            )
-        )
         return (
             <div>
 
                 <br /><br />
-                <h3 style={{ marginLeft: "180px" }}>TOP 주제</h3>
+                <h3 style={{ marginLeft: "180px" }}>추천 주제</h3>
                 <Table responsive style={{ width: '800px', margin: '10px 170px' }}>
                     <thead>
                         <tr>
@@ -68,23 +109,37 @@ class MainContainer extends Component {
                             <th>주제작성자</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {(topicList)}
-                    </tbody>
+                    {this.state.topicData.length != 0 ? 
+                    <tbody>{this.state.topicData.map(topic =>
+                        (
+                            <TopicList
+                                key={topic.topicCode}
+                                {...topic}
+                
+                            />
+                        )
+                    )}</tbody> :
+                    <tbody></tbody>}
                 </Table>
                 <br />   <br />
-                <h3 style={{ marginLeft: "180px" }}>TOP 작가</h3>
+                <h3 style={{ marginLeft: "180px" }}>추천 작가</h3>
                 <Table responsive style={{ width: '800px', margin: '10px 170px' }}>
                     <thead>
                         <tr>
                             <th>순위</th>
                             <th>작가이름</th>
-                            <th>등록한 글 수 </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {/* {(WriterList)} */}
-                    </tbody>
+                    {this.state.writingData.length != 0 ? 
+                    <tbody>{this.state.writingData.map(writing =>
+                        (
+                            <Writer
+                                key={writing.userId}
+                                {...writing}
+                            />
+                        )
+                    )}</tbody> :
+                    <tbody></tbody>}
                 </Table>
             </div>
         );

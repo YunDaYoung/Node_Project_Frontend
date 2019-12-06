@@ -38,11 +38,14 @@ class MyPageContainer extends Component {
                 return response.json();
             })
             .then(data => {
-                data = data.filter(writing => {
-                    return writing.userId == this.props.user.userId
-                })
-                console.log(data);
-                this.setState({ writingList: data })
+                if(data.result == false) { console.log("값 없음") }
+                else{
+                    data = data.filter(writing => {
+                        return writing.userId == this.props.user.userId
+                    })
+                    console.log(data);
+                    this.setState({ writingList: data })
+                }
             })
     }
 

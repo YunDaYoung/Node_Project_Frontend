@@ -19,22 +19,16 @@ class CompleteTopicContainer extends Component {
             .then((res) => {
                 console.log(res.data.data)
                 console.log('success');
-                console.log(res.data)
-                this.setState({
+                console.log(res.data);
+                if(res.data.result == false){}
+                else{ 
+                    this.setState({
                     completeTopicList: res.data
-                })
+                })}
             })
     }
 
     render() {
-        const completeTopicList = this.state.completeTopicList.map(topic =>
-            (
-                <CompleteTopicPresenter
-                    key={topic.topicCode}
-                    {...topic}
-                />
-            )
-        )
         return (
             <div>
                 <h3 style={{ marginLeft: "720px" }}>완결된 책</h3>
@@ -45,9 +39,19 @@ class CompleteTopicContainer extends Component {
                             <th style={{ width: '130px', textAlign: "center" }}>주제 작성자</th>
                         </tr>
                     </thead>
-                     <tbody>
-                         {(completeTopicList)}
-                     </tbody>:
+                    {this.state.completeTopicList.lentgh !== 0 ?
+                    <tbody>
+                    {this.state.completeTopicList.map(topic =>
+                        (
+                            <CompleteTopicPresenter
+                                key={topic.topicCode}
+                                {...topic}
+                            />
+                        )
+                    )}
+                    </tbody>:
+                    <tbody></tbody>
+                    }
                 </Table>
             </div>
         );
